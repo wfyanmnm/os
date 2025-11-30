@@ -1,1 +1,13 @@
+# 编译产物
+*.o
 *.bin
+*.raw
+*.elf
+*.map
+*.img
+*.iso
+
+# 编辑器/系统临时文件
+*.swp
+*~
+.DS_Store
