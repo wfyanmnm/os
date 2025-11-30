@@ -1,26 +1,25 @@
-; kernel.asm - 这是一个迷你内核
+; kernel.asm - 32-bit Kernel
 [org 0x9000]
+[bits 32]
 
 start:
-    ; --- 成功着陆！ ---
-    ; 如果能运行到这里，说明 Bootloader 成功把我们加载并跳转过来了
-    mov si, msg_kernel
-    call print_string_kernel
+    ; Print a message to video memory
+    mov esi, msg_kernel
+    mov edi, 0xb8000 ; Video memory address
 
-    ; --- 内核主循环 ---
+print_loop:
+    mov al, [esi]
+    cmp al, 0
+    je done
+
+    mov [edi], al     ; Character
+    mov byte [edi+1], 0x0f ; Attribute (White on Black)
+
+    add esi, 1
+    add edi, 2
+    jmp print_loop
+
+done:
     jmp $
 
-; --- 内核专用的打印函数 ---
-; (注意：因为不在同一个文件了，它没法用 boot.asm 里的函数，必须自己带一个)
-print_string_kernel:
-    mov ah, 0x0e
-.next:
-    lodsb
-    cmp al, 0
-    je .done
-    int 0x10
-    jmp .next
-.done:
-    ret
-
-msg_kernel: db 'Success! I am the KERNEL code running at 0x9000!', 0
+msg_kernel: db "Success! Kernel is running in 32-bit Protected Mode!", 0
